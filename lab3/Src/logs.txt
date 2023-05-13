@@ -1,0 +1,42 @@
+#define MAX_LOG_MSG 256
+
+static FILE* log_file = NULL;
+
+
+void finit_log_file() {
+    fclose(log_file);
+}
+
+char* get_log_level_str(int log_level) {
+    switch (log_level)
+    {
+    case 0:
+        return "DBG";
+    case 1:
+        return "INFO";
+    
+    default:
+        return "INFO";
+    }
+}
+
+void log_msg(int log_level, char* msg) {
+    char* log_level_str = get_log_level_str(log_level);
+
+    char log_msg[MAX_LOG_MSG];
+    time_t curr_time = time(NULL);
+    sprintf(log_msg, "[%8s] in function: [%32s] in time: [%s] - %128s.\n", log_level_str, __func__, ctime(&curr_time), msg);
+}
+
+void init_log_file(char* exec_name) {
+    char log_file_name[256] = {0};
+    time_t curr_time = time(NULL);
+    sprintf(log_file_name, "%128s.%64s", exec_name, ctime(&curr_time));
+
+    log_file = fopen(log_file_name, "w");
+    if (!log_file) {
+        perror("Cannot init log file, sorry.\n");
+    }
+}
+
+
