@@ -11,17 +11,20 @@ TargetName=app
 
 .PHONY: build
 build:
-	clean
-
+	make clean
+	mkdir $(ExecDir)
 	$(Compiler) $(wildcard $(SrcDir)/*.c) $(Wkeys) $(OptKeys) $(DbgKeys) -o $(ExecDir)/$(TargetName)
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/create_dir
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/lookup_dir
+	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_dir
+
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/create_file
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/lookup_file
+	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_file
+	
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/create_symlink
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/create_hardlink
-	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_dir
-	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_file
+	
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_symlink
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_hardlink
 
