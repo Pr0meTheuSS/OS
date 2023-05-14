@@ -34,6 +34,39 @@ void strrev(char* str) {
     }
 }
 
+int create_dir(const char* directoryName) {
+    int status = mkdir(directoryName, S_IRWXU | S_IRWXG | S_IRWXO); if (status != 0) {
+        perror("Opendir error.\n");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int lookup_dir(const char* directoryPath) {
+    DIR* directory = opendir(directoryPath);
+    if (directory == NULL) {
+        perror("Opendir error.\n");
+        return EXIT_FAILURE;
+    }
+
+    struct dirent* entry;
+    while ((entry = readdir(directory)) != NULL) {
+        printf("%s\n", entry->d_name);
+    }
+
+    return closedir(directory);
+}
+
+int rm_dir(const char* directoryName) {
+    int status = rmdir(directoryName); if (status != 0) {
+        perror("RmDir error.\n");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
 // Clone file with path src_file_path into dest_dir_name with reversed file name and with reversed content.
 int clone_reversed_reg_file(char* src_file_path, char* dest_dir_name) {
     assert(src_file_path);
@@ -54,6 +87,11 @@ int clone_reversed_reg_file(char* src_file_path, char* dest_dir_name) {
 
     char dest_file_path[PATH_MAX];
     char* bname =  basename(src_file_path);
+    if (strlen(bname) > PATH_MAX) {
+        fprintf(stderr, "Path len so long: %ld", strlen(bname));
+        return EXIT_FAILURE;
+    }
+
     strrev(bname);
 
     sprintf(dest_file_path, "%s/%s", dest_dir_name, bname);
@@ -95,6 +133,11 @@ int clone_reversed_reg_file(char* src_file_path, char* dest_dir_name) {
 int mirror(char* file_path) {
     printf("file path: %s\n", file_path);
 
+    if (strlen(file_path) >= PATH_MAX) {
+        fprintf(stderr, "Path len so long: %ld", strlen(file_path));
+        return EXIT_FAILURE;
+    }
+
     char dest_dir_name[PATH_MAX];
     strcpy(dest_dir_name, basename(file_path));
     strrev(dest_dir_name);
@@ -121,6 +164,11 @@ int mirror(char* file_path) {
         struct dirent *entry; 
         while ((entry = readdir(dir))) {
             printf("%s\n", entry->d_name);
+            if (strlen(entry->d_name) >= PATH_MAX) {
+                fprintf(stderr, "Path len so long: %ld", strlen(entry->d_name));
+                return EXIT_FAILURE;
+            }
+
             char file_path_to_reverse[PATH_MAX];
             sprintf(file_path_to_reverse, "%s/%s", file_path, entry->d_name);
             printf("file to clone: %s\n", file_path_to_reverse);            
@@ -138,16 +186,16 @@ int mirror(char* file_path) {
 // Return a string with link name, that was executed for running current programm.
 char* get_link_name() {
     char exe_path[PATH_MAX];
-    ssize_t len = readlink("/proc/self/exe", exe_path, PATH_MAX - 1);
-    if (len == -1) {
+    ssize_t len = readlink("/proc/self/exe", exe_path, PATH_MAX - 1); if (len == -1) {
         perror("Error in readlink.\n");
         return NULL;
     }
+
     exe_path[len] = '\0';
     return basename(exe_path);
 }
 
-// Manager to invoke fit handler by link name.
+// Manager - invoke fit handler by link name.
 int execute(char* link_name, int argc, char* argv[]) {
     printf("App was exec in [%s] mode.\n", link_name);
 
@@ -158,9 +206,41 @@ int execute(char* link_name, int argc, char* argv[]) {
         }
 
         return mirror(argv[1]);
+    } else if (strcmp(link_name, "create_file") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in create_file calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
 
-    } else if (strcmp(link_name, "link2") == EXIT_SUCCESS) {
+        return EXIT_FAILURE;//return create_file(argv[1]);
+    } else if (strcmp(link_name, "unlink_file") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in unlink_file calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
 
+        return EXIT_FAILURE;//return unlink_file(argv[1]);
+    } else if (strcmp(link_name, "create_dir") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in create_dir calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return create_dir(argv[1]);
+    } else if (strcmp(link_name, "lookup_dir") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in lookup_dir calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return lookup_dir(argv[1]);
+    } else if (strcmp(link_name, "rm_dir") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in rm_dir calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return rm_dir(argv[1]);
     } else {
         fprintf(stderr, "Unknown link: %s\n", link_name);
         return EXIT_FAILURE;
