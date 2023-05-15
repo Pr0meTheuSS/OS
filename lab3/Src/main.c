@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 4096
 
 void swap(char* a, char* b) {
     if (!a || !b) {
@@ -128,6 +128,82 @@ int clone_reversed_reg_file(char* src_file_path, char* dest_dir_name) {
     return EXIT_SUCCESS;
 }
 
+int create_file(const char* filename) {
+    FILE* file = fopen(filename, "w"); if (file == NULL) {
+        perror("Create file error.\n");
+        return EXIT_FAILURE;
+    }
+    fclose(file);
+    
+    return EXIT_SUCCESS; 
+}
+
+int rm_file(const char* filename) {
+    int status = unlink(filename); if (status != EXIT_SUCCESS) {
+        printf("Remove file error.\n");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int cat_file(const char* filename) {
+    FILE* f = fopen(filename, "r"); if (f == NULL) {
+        perror("File open error.\n");
+        return EXIT_FAILURE;
+    }
+
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_read;
+
+    while ((bytes_read = fread(buffer, sizeof(buffer[0]), BUFFER_SIZE, f)) > 0) {
+        ssize_t bytes_written = write(STDOUT_FILENO, buffer, bytes_read); if (bytes_written == -1) {
+            perror("Write error.\n");
+            fclose(f);
+            return EXIT_FAILURE;
+        }
+    }
+
+    if (bytes_read == -1) {
+        perror("Read file error.\n");
+        fclose(f);
+        return EXIT_FAILURE;
+    }
+
+    fclose(f);
+    return EXIT_SUCCESS;
+}
+int create_symlink(const char* source, const char* linkName) {
+    int status = symlink(source, linkName);
+    if (status != EXIT_SUCCESS) {
+        perror("Symlink create error.\n");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int cat_symlink(const char* linkName) {
+    char targetPath[PATH_MAX];
+    ssize_t bytesRead = readlink(linkName, targetPath, sizeof(targetPath) - 1);
+    if (bytesRead != EXIT_SUCCESS) {
+        perror("Symlink read error.\n");
+        return EXIT_FAILURE;
+    }
+
+    targetPath[bytesRead] = '\0';
+    printf("symlink: %s\n", targetPath);
+    return EXIT_SUCCESS;
+}
+
+int cat_link_content(const char* filename) {
+    return cat_file(filename);
+}
+
+int rm_symlink(const char* linkName) {
+    return rm_file(linkName);
+}
+
 // Handler of mirror link. 
 // Copy dir with reversed name in the current execution context with copies of reversed regular files.
 int mirror(char* file_path) {
@@ -212,14 +288,14 @@ int execute(char* link_name, int argc, char* argv[]) {
             return EXIT_FAILURE;
         }
 
-        return EXIT_FAILURE;//return create_file(argv[1]);
-    } else if (strcmp(link_name, "unlink_file") == EXIT_SUCCESS) {
+        return create_file(argv[1]);
+    } else if (strcmp(link_name, "rm_file") == EXIT_SUCCESS) {
         if (argc < 2) {
-            perror("Error in unlink_file calls - wrong argc.\n");
+            perror("Error in rm_file calls - wrong argc.\n");
             return EXIT_FAILURE;
         }
 
-        return EXIT_FAILURE;//return unlink_file(argv[1]);
+        return rm_file(argv[1]);
     } else if (strcmp(link_name, "create_dir") == EXIT_SUCCESS) {
         if (argc < 2) {
             perror("Error in create_dir calls - wrong argc.\n");
@@ -227,6 +303,13 @@ int execute(char* link_name, int argc, char* argv[]) {
         }
 
         return create_dir(argv[1]);
+    } else if (strcmp(link_name, "cat_file") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in cat_file calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return cat_file(argv[1]);
     } else if (strcmp(link_name, "lookup_dir") == EXIT_SUCCESS) {
         if (argc < 2) {
             perror("Error in lookup_dir calls - wrong argc.\n");
@@ -241,6 +324,34 @@ int execute(char* link_name, int argc, char* argv[]) {
         }
 
         return rm_dir(argv[1]);
+    } else if (strcmp(link_name, "create_symlink") == EXIT_SUCCESS) {
+        if (argc < 3) {
+            perror("Error in create_symlink calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return create_symlink(argv[1], argv[2]);
+    } else if (strcmp(link_name, "rm_symlink") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in rm_symlink calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return rm_symlink(argv[1]);
+    } else if (strcmp(link_name, "cat_link_content") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in cat_link_content calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return cat_link_content(argv[1]);
+    } else if (strcmp(link_name, "cat_symlink") == EXIT_SUCCESS) {
+        if (argc < 2) {
+            perror("Error in rm_symlink calls - wrong argc.\n");
+            return EXIT_FAILURE;
+        }
+
+        return cat_symlink(argv[1]);
     } else {
         fprintf(stderr, "Unknown link: %s\n", link_name);
         return EXIT_FAILURE;

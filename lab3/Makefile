@@ -19,13 +19,16 @@ build:
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_dir
 
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/create_file
-	ln $(ExecDir)/$(TargetName) $(ExecDir)/lookup_file
+	ln $(ExecDir)/$(TargetName) $(ExecDir)/cat_file
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_file
 	
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/create_symlink
+	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_symlink
+	ln $(ExecDir)/$(TargetName) $(ExecDir)/cat_symlink_content
+	ln $(ExecDir)/$(TargetName) $(ExecDir)/cat_symlink
+
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/create_hardlink
 	
-	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_symlink
 	ln $(ExecDir)/$(TargetName) $(ExecDir)/rm_hardlink
 
 .PHONY: clean
