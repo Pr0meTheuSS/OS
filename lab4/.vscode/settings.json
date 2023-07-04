@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "string.h": "c",
+        "stat.h": "c",
+        "limits.h": "c",
+        "syslimits.h": "c"
+    }
+}
