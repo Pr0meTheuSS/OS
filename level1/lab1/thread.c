@@ -6,22 +6,27 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+void print_ids(const char* header) {
+	printf("%s. [%d %d %d]\n", header, getpid(), getppid(), gettid());
+}
+
 void* mythread(void* arg) {
-	printf("mythread [%d %d %d]: Hello from mythread!\n", getpid(), getppid(), gettid());
-	return NULL;
+    print_ids("Hello from mythread");
+    return NULL;
 }
 
 int main() {
 	pthread_t tid;
 	int err;
+    
+    print_ids("Hello from main");
 
-	printf("main [%d %d %d]: Hello from main!\n", getpid(), getppid(), gettid());
-
-	err = pthread_create(&tid, NULL, mythread, NULL);
-	if (err) {
+	err = pthread_create(&tid, NULL, mythread, NULL); 
+    if (err) {
 	    printf("main: pthread_create() failed: %s\n", strerror(err));
 		return -1;
 	}
 
 	return 0;
 }
+
