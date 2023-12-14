@@ -2,7 +2,7 @@
 CC = gcc
 
 # Опции компилятора
-CFLAGS = -Wall -Iinclude -Wextra -pedantic
+CFLAGS = -Wall -Iinclude -Wextra -pedantic -O0 -g
 
 # Директории
 SRCDIR = src
@@ -18,8 +18,11 @@ OBJECTS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SOURCES))
 # Имя исходного файла
 TARGET = $(BINDIR)/pthread
 
+# Имя статической библиотеки
+LIB_STATIC = $(BINDIR)/libpthread.a
 
-all: $(BINDIR) $(TARGET)
+
+all: $(BINDIR) $(LIB_STATIC)
 
 # Цель для исполняемого файла
 $(TARGET): $(OBJECTS)
@@ -28,6 +31,10 @@ $(TARGET): $(OBJECTS)
 # Цель для объектных файлов
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+# Цель для статической библиотеки
+$(LIB_STATIC): $(OBJECTS)
+	ar rcs $@ $^
 
 # Создание директории obj, если она не существует
 $(OBJDIR):

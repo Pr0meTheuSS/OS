@@ -31,6 +31,7 @@ typedef struct thread {
     void* restrict      retval;
     int                 joined;
     int                 finished;
+    int                 waiter;
 } thread;
 
 int start_thread(void* th);

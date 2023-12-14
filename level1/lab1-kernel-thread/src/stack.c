@@ -43,10 +43,10 @@ void destroy_stack(Stack *stack) {
         if (stack->stack_ptr != NULL) {
             munmap(stack->stack_ptr, stack->stack_size);
         }
-        if (stack->guard_page != NULL) {
-            munmap(stack->guard_page, getpagesize());
-        }
+        // if (stack->guard_page != NULL) {
+        //     munmap(stack->guard_page, getpagesize());
+        // }
 
-        free(stack);
+        //free(stack);
     }
 }
