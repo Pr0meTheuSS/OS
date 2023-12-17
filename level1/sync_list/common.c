@@ -1,23 +1,20 @@
 #include <assert.h>
 #include "common.h"
 
-// Генерация случайной строки заданной длины
-void generateRandomString(char* str, size_t length) {
+void generate_random_string(char* str, size_t length) {
     const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     for (int i = 0; i < length - 1; ++i) {
         int index = rand() % (sizeof(charset) - 1);
         str[i] = charset[index];
     }
     
-    str[length - 1] = '\0';  // Убедимся, что строка завершается нулевым символом
+    str[length - 1] = '\0';
 }
 
-
-// Генерация случайной строки случайной длины
-void generateRandomLimitedString(char* dest, size_t max_len) {
+void generate_random_limited_string(char* dest, size_t max_len) {
     assert(dest);
     size_t len = rand() % (max_len - 1) + 1;
-    generateRandomString(dest, len);
+    generate_random_string(dest, len);
 }
 
 int less(size_t a, size_t b) {

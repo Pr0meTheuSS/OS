@@ -15,7 +15,7 @@ typedef struct List {
     _Atomic size_t successfully_swaped_amount;
 } List;
 
-void initializeListWithRandomStrings(List* list, int numElements);
+void initialize_list_with_random_strings(List* list, int numElements);
 
 void append(List* list, const char* value);
 

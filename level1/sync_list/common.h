@@ -1,11 +1,9 @@
 #pragma once
 #include <stdlib.h>   // for size_t.
 
-// Генерация случайной строки заданной длины
-void generateRandomString(char* str, size_t length);
+void generate_random_string(char* str, size_t length);
 
-// Генерация случайной строки случайной длины
-void generateRandomLimitedString(char* dest, size_t max_len);
+void generate_random_limited_string(char* dest, size_t max_len);
 
 int less(size_t a, size_t b);
 

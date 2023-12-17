@@ -8,7 +8,7 @@
 
 int main() {
     List my_list = { .head = NULL, .successfully_swaped_amount = 0, .threads_attempts_amount = {0, 0, 0}};
-    initializeListWithRandomStrings(&my_list, 10);
+    initialize_list_with_random_strings(&my_list, 10);
 
     pthread_t swapper_tids[3];
     pthread_t searchers_tids[3];

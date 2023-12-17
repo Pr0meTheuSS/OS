@@ -5,12 +5,12 @@
 #include "list.h"
 
 // Инициализация списка с заданным числом элементов
-void initializeListWithRandomStrings(List* list, int numElements) {
+void initialize_list_with_random_strings(List* list, int numElements) {
     assert(list);
 
     for (int i = 0; i < numElements; ++i) {
         char randomString[MAX_STRING_LENGTH];
-        generateRandomLimitedString(randomString, MAX_STRING_LENGTH);
+        generate_random_limited_string(randomString, MAX_STRING_LENGTH);
         append(list, randomString);
     }
 }
