@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "stack.h": "c",
+        "atomic": "c",
+        "futex.h": "c",
+        "stdint.h": "c"
+    }
+}
