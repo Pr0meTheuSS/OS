@@ -47,12 +47,12 @@ int create_thread(uintptr_t* tid, start_routine func, void* args) {
                 | CLONE_SIGHAND | CLONE_THREAD
                 | 0);
 
-    clone(start_thread,
+    int ret = clone(start_thread,
             (unsigned char*)th->st->stack_ptr + th->st->stack_size,
             clone_flags,
             (void*)th);
 
-    if (errno != 0) {
+    if (ret == -1 && errno != 0) {
         perror(strerror(errno));
         goto failed;
     }
