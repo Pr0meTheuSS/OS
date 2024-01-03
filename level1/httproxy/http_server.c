@@ -204,7 +204,7 @@ void* mthread_http_listen_and_serv_impl(void* args) {
         pthread_exit(NULL);
     }
 
-    if (listen(server_socket, 1024) < 0) {
+    if (listen(server_socket, 8) < 0) {
         perror("Error listening for connections");
         close(server_socket);
         pthread_exit(NULL);
